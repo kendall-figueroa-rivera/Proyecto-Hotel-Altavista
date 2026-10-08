@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8"/><title>Nueva Reservación | Hotel Altavista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments :: sidebar('reservaciones')}"></div>
+    <div class="main-content">
+        <header class="topbar"><h1 class="page-title">Nueva Reservación</h1></header>
+        <main class="page-body">
+
+            <div th:if="${error}" class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i><span th:text="${error}"></span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 360px; gap:24px;">
+
+                <div class="card">
+                    <div class="card-header"><span class="card-title">Datos de la Reservación</span></div>
+                    <div class="card-body">
+                        <form th:action="@{/reservaciones/guardar}" method="post" id="formReservacion">
+
+                            <!-- Admin/Recepcionista elige huesped -->
+                            <div class="form-group" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+                                <label class="form-label">Huésped</label>
+                                <select name="idUsuario" class="form-control" required>
+                                    <option value="">Seleccionar huésped...</option>
+                                    <option th:each="u : ${usuarios}"
+                                            th:value="${u.idUsuario}"
+                                            th:text="${u.nombre + ' ' + u.apellido1 + ' — ' + u.identificacion}"></option>
+                                </select>
+                            </div>
+
+                            <!-- Cliente se reserva a si mismo -->
+                            <div sec:authorize="hasRole('CLIENTE')"
+                                 style="background:var(--bg-elevated); border-radius:8px; padding:12px; margin-bottom:20px;">
+                                <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px;">Reservando para</div>
+                                <div style="color:var(--gold); font-weight:500;" sec:authentication="name">Tu usuario</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Habitación</label>
+                                <select name="idHabitacion" id="selectHabitacion" class="form-control" required onchange="calcularTotal()">
+                                    <option value="">Seleccionar habitación disponible...</option>
+                                    <option th:each="h : ${habitaciones}"
+                                            th:value="${h.idHabitacion}"
+                                            th:data-precio="${h.precioNoche}"
+                                            th:text="'#' + ${h.numero} + ' — ' + ${h.tipo} + ' — ₡' + ${#numbers.formatDecimal(h.precioNoche,1,0)} + '/noche'"></option>
+                                </select>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Fecha de Entrada</label>
+                                    <input type="date" name="fechaEntrada" id="fechaEntrada"
+                                           class="form-control" required onchange="calcularTotal()"/>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Fecha de Salida</label>
+                                    <input type="date" name="fechaSalida" id="fechaSalida"
+                                           class="form-control" required onchange="calcularTotal()"/>
+                                </div>
+                            </div>
+
+                            <!-- Solo Admin/Recepcionista puede elegir oferta -->
+                            <div class="form-group" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+                                <label class="form-label">Oferta (opcional)</label>
+                                <select name="idOferta" id="selectOferta" class="form-control" onchange="calcularTotal()">
+                                    <option value="">Sin oferta</option>
+                                    <option th:each="o : ${ofertas}"
+                                            th:value="${o.idOferta}"
+                                            th:data-descuento="${o.descuento}"
+                                            th:text="${o.titulo + ' — ' + o.descuento + '% descuento'}"></option>
+                                </select>
+                            </div>
+
+                            <!-- Cliente no elige oferta — se aplica sin descuento -->
+                            <div sec:authorize="hasRole('CLIENTE')"
+                                 style="background:var(--gold-glow); border:1px solid var(--gold-dim); border-radius:8px; padding:12px; margin-bottom:20px;">
+                                <i class="fas fa-info-circle" style="color:var(--gold);"></i>
+                                <span style="color:var(--gold); margin-left:6px; font-size:13px;">
+                                    Las ofertas se aplican automáticamente al confirmar tu reservación.
+                                </span>
+                            </div>
+
+                            <input type="hidden" name="totalPago" id="totalPago" value="0"/>
+                            <input type="hidden" name="estado" value="confirmada"/>
+
+                            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
+                                <i class="fas fa-calendar-check"></i> Confirmar Reservación
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- RESUMEN -->
+                <div>
+                    <div class="card" style="position:sticky; top:80px;">
+                        <div class="card-header"><span class="card-title">Resumen del Costo</span></div>
+                        <div class="card-body">
+                            <div style="margin-bottom:16px;">
+                                <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px;">Precio por noche</div>
+                                <div style="color:var(--text-primary); font-size:16px;" id="resumenPrecioNoche">₡ 0</div>
+                            </div>
+                            <div style="margin-bottom:16px;">
+                                <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px;">Noches</div>
+                                <div style="color:var(--text-primary); font-size:16px;" id="resumenNoches">0</div>
+                            </div>
+                            <div style="margin-bottom:16px;">
+                                <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px;">Subtotal</div>
+                                <div style="color:var(--text-primary); font-size:16px;" id="resumenSubtotal">₡ 0</div>
+                            </div>
+                            <div style="margin-bottom:20px; display:none;" id="bloqueDescuento">
+                                <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px;">Descuento</div>
+                                <div style="color:var(--success); font-size:16px;" id="resumenDescuento">- ₡ 0</div>
+                            </div>
+                            <div style="border-top:1px solid var(--border); padding-top:16px;">
+                                <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">TOTAL A PAGAR</div>
+                                <div style="color:var(--gold); font-size:32px; font-family:var(--font-display); font-weight:300;" id="resumenTotal">₡ 0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+function calcularTotal() {
+    const selectHab = document.getElementById('selectHabitacion');
+    const fechaEnt  = document.getElementById('fechaEntrada').value;
+    const fechaSal  = document.getElementById('fechaSalida').value;
+    const selectOfe = document.getElementById('selectOferta');
+
+    if (!selectHab.value || !fechaEnt || !fechaSal) return;
+
+    const precio  = parseFloat(selectHab.options[selectHab.selectedIndex].dataset.precio) || 0;
+    const entrada = new Date(fechaEnt);
+    const salida  = new Date(fechaSal);
+    const noches  = Math.round((salida - entrada) / (1000 * 60 * 60 * 24));
+
+    if (noches <= 0) {
+        document.getElementById('resumenNoches').textContent = 'Fechas inválidas';
+        return;
+    }
+
+    const subtotal = precio * noches;
+    let descuento = 0, pct = 0;
+
+    if (selectOfe && selectOfe.value) {
+        pct = parseFloat(selectOfe.options[selectOfe.selectedIndex].dataset.descuento) || 0;
+        descuento = subtotal * (pct / 100);
+    }
+
+    const total = subtotal - descuento;
+
+    document.getElementById('resumenPrecioNoche').textContent = '₡ ' + precio.toLocaleString('es-CR');
+    document.getElementById('resumenNoches').textContent = noches + (noches === 1 ? ' noche' : ' noches');
+    document.getElementById('resumenSubtotal').textContent = '₡ ' + subtotal.toLocaleString('es-CR');
+    document.getElementById('resumenTotal').textContent = '₡ ' + total.toLocaleString('es-CR');
+    document.getElementById('totalPago').value = total.toFixed(2);
+
+    if (descuento > 0) {
+        document.getElementById('bloqueDescuento').style.display = 'block';
+        document.getElementById('resumenDescuento').textContent = '- ₡ ' + descuento.toLocaleString('es-CR') + ' (' + pct + '%)';
+    } else {
+        document.getElementById('bloqueDescuento').style.display = 'none';
+    }
+}
+
+const hoy = new Date().toISOString().split('T')[0];
+document.getElementById('fechaEntrada').min = hoy;
+document.getElementById('fechaSalida').min  = hoy;
+document.getElementById('fechaEntrada').addEventListener('change', function() {
+    document.getElementById('fechaSalida').min = this.value;
+});
+</script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

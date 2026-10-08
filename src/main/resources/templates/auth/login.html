@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Iniciar Sesión | Hotel Altavista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<div class="login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <span class="brand-icon">⬡</span>
+            <span class="brand-name">Hotel Altavista</span>
+            <span class="brand-sub">Sistema de Gestión</span>
+        </div>
+
+        <!-- Mensajes de error/éxito -->
+        <div th:if="${error}" class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${error}">Error</span>
+        </div>
+        <div th:if="${logout}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${logout}">Logout</span>
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label class="form-label">Usuario</label>
+                <input type="text"
+                       name="username"
+                       class="form-control"
+                       placeholder="Ingresá tu usuario"
+                       required autofocus/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Contraseña</label>
+                <input type="password"
+                       name="password"
+                       class="form-control"
+                       placeholder="••••••••"
+                       required/>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;">
+                <i class="fas fa-sign-in-alt"></i>
+                Ingresar al Sistema
+            </button>
+        </form>
+
+        <p style="text-align:center; margin-top:20px; color:var(--text-muted); font-size:13px;">
+            ¿No tenés cuenta?
+            <a th:href="@{/registro}" style="color:var(--gold); text-decoration:none;">Registrarse</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${title} + ' | Hotel Altavista'">Hotel Altavista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<!-- SIDEBAR NAVIGATION -->
+<nav th:fragment="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+        <span class="brand-icon">⬡</span>
+        <div class="brand-text">
+            <span class="brand-name">Hotel</span>
+            <span class="brand-sub">Lenguaje</span>
+        </div>
+    </div>
+
+    <ul class="nav-list">
+        <li class="nav-item">
+            <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPage == 'dashboard'} ? ' active'">
+                <i class="fas fa-chart-square"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-section">GESTIÓN</li>
+        <li class="nav-item">
+            <a th:href="@{/reservaciones}" class="nav-link" th:classappend="${currentPage == 'reservaciones'} ? ' active'">
+                <i class="fas fa-calendar-check"></i>
+                <span>Reservaciones</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/habitaciones}" class="nav-link" th:classappend="${currentPage == 'habitaciones'} ? ' active'">
+                <i class="fas fa-bed"></i>
+                <span>Habitaciones</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/pagos}" class="nav-link" th:classappend="${currentPage == 'pagos'} ? ' active'">
+                <i class="fas fa-credit-card"></i>
+                <span>Pagos</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/usuarios}" class="nav-link" th:classappend="${currentPage == 'usuarios'} ? ' active'">
+                <i class="fas fa-users"></i>
+                <span>Usuarios</span>
+            </a>
+        </li>
+        <li class="nav-section">INVENTARIO</li>
+        <li class="nav-item">
+            <a th:href="@{/productos}" class="nav-link" th:classappend="${currentPage == 'productos'} ? ' active'">
+                <i class="fas fa-box"></i>
+                <span>Productos</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/ofertas}" class="nav-link" th:classappend="${currentPage == 'ofertas'} ? ' active'">
+                <i class="fas fa-tag"></i>
+                <span>Ofertas</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+                <span class="user-name" sec:authentication="name">Usuario</span>
+                <span class="user-role" sec:authorize="hasRole('ADMIN')">Administrador</span>
+                <span class="user-role" sec:authorize="hasRole('RECEPCIONISTA')">Recepcionista</span>
+            </div>
+        </div>
+        <a th:href="@{/logout}" class="logout-btn" title="Cerrar sesión">
+            <i class="fas fa-sign-out-alt"></i>
+        </a>
+    </div>
+</nav>
+
+<!-- TOPBAR -->
+<header th:fragment="topbar(pageTitle)" class="topbar">
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <h1 class="page-title" th:text="${pageTitle}">Título</h1>
+    <div class="topbar-actions">
+        <span class="date-display" id="currentDate"></span>
+    </div>
+</header>
+
+</body>
+</html>

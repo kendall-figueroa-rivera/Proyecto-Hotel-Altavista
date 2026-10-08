@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8"/><title>Procesar Pago | Hotel Altavista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments :: sidebar('pagos')}"></div>
+    <div class="main-content">
+        <header class="topbar">
+            <h1 class="page-title" th:text="${esCliente} ? 'Pagar mi Reservación' : 'Procesar Pago'"></h1>
+        </header>
+        <main class="page-body">
+            <div th:if="${error}" class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i><span th:text="${error}"></span>
+            </div>
+            <div class="card" style="max-width:580px;">
+                <div class="card-header"><span class="card-title">Datos del Pago</span></div>
+                <div class="card-body">
+                    <form th:action="@{/pagos/procesar}" method="post">
+                        <div class="form-group">
+                            <label class="form-label">Reservación</label>
+                            <select name="idReservacion" id="selectReservacion"
+                                    class="form-control" required onchange="mostrarSaldo(this)">
+                                <option value="">Seleccionar reservación...</option>
+                                <option th:each="r : ${reservaciones}"
+                                        th:value="${r.idReservacion}"
+                                        th:data-total="${r.totalPago}"
+                                        th:text="'#' + ${r.idReservacion} + ' — ' + ${r.usuario.nombre} + ' ' + ${r.usuario.apellido1} + ' — Total: ₡' + ${#numbers.formatDecimal(r.totalPago,1,0)}"></option>
+                            </select>
+                        </div>
+                        <div id="bloqueSaldo" style="display:none; background:var(--bg-elevated); border-radius:8px; padding:16px; margin-bottom:20px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                <span style="color:var(--text-muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em;">Total Reservación</span>
+                                <span style="color:var(--text-primary);" id="totalReservacion">₡ 0</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:8px;">
+                                <span style="color:var(--text-muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em;">Saldo Pendiente</span>
+                                <span style="color:var(--gold); font-size:18px; font-family:var(--font-display);" id="saldoPendiente">₡ 0</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Método de Pago</label>
+                            <select name="idMetodoPago" class="form-control" required>
+                                <option value="">Seleccionar método...</option>
+                                <option th:each="m : ${metodos}" th:value="${m.idMetodoPago}" th:text="${m.nombre}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Monto a Pagar (₡)</label>
+                            <input type="number" step="0.01" name="monto" id="inputMonto"
+                                   class="form-control" placeholder="0.00" required/>
+                            <small style="color:var(--text-muted); font-size:12px; margin-top:4px; display:block;">
+                                Podés realizar pagos parciales. El sistema registrará el saldo pendiente.
+                            </small>
+                        </div>
+                        <div style="display:flex; gap:12px; margin-top:8px;">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Procesar Pago</button>
+                            <a th:href="@{/pagos}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script>
+function mostrarSaldo(select) {
+    const opcion = select.options[select.selectedIndex];
+    const total  = parseFloat(opcion.dataset.total) || 0;
+    if (total > 0) {
+        document.getElementById('bloqueSaldo').style.display = 'block';
+        document.getElementById('totalReservacion').textContent = '₡ ' + total.toLocaleString('es-CR');
+        document.getElementById('saldoPendiente').textContent   = '₡ ' + total.toLocaleString('es-CR');
+        document.getElementById('inputMonto').max   = total;
+        document.getElementById('inputMonto').value = total;
+    } else {
+        document.getElementById('bloqueSaldo').style.display = 'none';
+    }
+}
+</script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

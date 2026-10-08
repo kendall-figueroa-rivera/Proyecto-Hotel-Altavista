@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8"/><title>Editar Usuario | Hotel Altavista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments :: sidebar('usuarios')}"></div>
+    <div class="main-content">
+        <header class="topbar"><h1 class="page-title">Editar Usuario</h1></header>
+        <main class="page-body">
+            <div class="card" style="max-width:600px;">
+                <div class="card-header"><span class="card-title">Datos del Usuario</span></div>
+                <div class="card-body">
+                    <form th:action="@{/usuarios/guardar}" method="post">
+                        <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}"/>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" name="nombre" th:value="${usuario.nombre}" class="form-control" required/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Primer Apellido</label>
+                                <input type="text" name="apellido1" th:value="${usuario.apellido1}" class="form-control" required/>
+                            </div>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Segundo Apellido</label>
+                                <input type="text" name="apellido2" th:value="${usuario.apellido2}" class="form-control"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Identificación</label>
+                                <input type="text" name="identificacion" th:value="${usuario.identificacion}" class="form-control" required/>
+                            </div>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Correo</label>
+                                <input type="email" name="correo" th:value="${usuario.correo}" class="form-control" required/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" name="telefono" th:value="${usuario.telefono}" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Usuario (username)</label>
+                                <input type="text" name="username" th:value="${usuario.username}" class="form-control" required/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Rol</label>
+                                <select name="idRol" class="form-control">
+                                    <option value="">Sin rol</option>
+                                    <option th:each="r : ${roles}"
+                                            th:value="${r.idRol}"
+                                            th:text="${r.nombre}"
+                                            th:selected="${usuario.rol != null and usuario.rol.idRol == r.idRol}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:12px;margin-top:8px;">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar Cambios</button>
+                            <a th:href="@{/usuarios}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

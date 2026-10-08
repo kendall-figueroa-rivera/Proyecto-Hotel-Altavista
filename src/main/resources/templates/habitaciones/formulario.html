@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Habitación | Hotel Altavista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="app-layout">
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">⬡</span>
+            <div class="brand-text"><span class="brand-name">Hotel</span><span class="brand-sub">Lenguaje</span></div>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item"><a th:href="@{/dashboard}" class="nav-link"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+            <li class="nav-section">GESTIÓN</li>
+            <li class="nav-item"><a th:href="@{/habitaciones}" class="nav-link active"><i class="fas fa-bed"></i><span>Habitaciones</span></a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a th:href="@{/logout}" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <header class="topbar">
+            <h1 class="page-title"
+                th:text="${habitacion.idHabitacion != null} ? 'Editar Habitación' : 'Nueva Habitación'"></h1>
+        </header>
+
+        <main class="page-body">
+            <div class="card" style="max-width:600px;">
+                <div class="card-header">
+                    <span class="card-title"
+                          th:text="${habitacion.idHabitacion != null} ? 'Editar datos' : 'Datos de la habitación'"></span>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/habitaciones/guardar}" method="post" th:object="${habitacion}">
+                        <input type="hidden" th:field="*{idHabitacion}"/>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Número de Habitación</label>
+                                <input type="number" th:field="*{numero}" class="form-control"
+                                       placeholder="101" required/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo</label>
+                                <select th:field="*{tipo}" class="form-control" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="individual">Individual</option>
+                                    <option value="doble">Doble</option>
+                                    <option value="suite">Suite</option>
+                                    <option value="penthouse">Penthouse</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Precio por Noche (₡)</label>
+                                <input type="number" step="0.01" th:field="*{precioNoche}"
+                                       class="form-control" placeholder="50000.00" required/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Estado</label>
+                                <select th:field="*{estado}" class="form-control" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="disponible">Disponible</option>
+                                    <option value="ocupada">Ocupada</option>
+                                    <option value="mantenimiento">Mantenimiento</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; gap:12px; margin-top:8px;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar
+                            </button>
+                            <a th:href="@{/habitaciones}" class="btn btn-outline">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

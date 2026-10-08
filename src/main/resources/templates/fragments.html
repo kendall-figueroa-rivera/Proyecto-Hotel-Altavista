@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head th:fragment="headComun(titulo)">
+    <meta charset="UTF-8"/>
+    <title th:text="${titulo} + ' | Hotel Altavista'">Hotel Altavista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<nav th:fragment="sidebar(activo)" class="sidebar">
+    <div class="sidebar-brand">
+        <span class="brand-icon">⬡</span>
+        <div class="brand-text"><span class="brand-name">Hotel</span><span class="brand-sub">Lenguaje</span></div>
+    </div>
+    <ul class="nav-list">
+
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a th:href="@{/dashboard}" th:class="'nav-link' + (${activo}=='dashboard'?' active':'')">
+                <i class="fas fa-th-large"></i><span>Dashboard</span>
+            </a>
+        </li>
+
+        <!-- ── ADMIN Y RECEPCIONISTA ── -->
+        <li class="nav-section" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">GESTIÓN</li>
+
+        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+            <a th:href="@{/reservaciones}" th:class="'nav-link' + (${activo}=='reservaciones'?' active':'')">
+                <i class="fas fa-calendar-check"></i><span>Reservaciones</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+            <a th:href="@{/habitaciones}" th:class="'nav-link' + (${activo}=='habitaciones'?' active':'')">
+                <i class="fas fa-bed"></i><span>Habitaciones</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+            <a th:href="@{/pagos}" th:class="'nav-link' + (${activo}=='pagos'?' active':'')">
+                <i class="fas fa-credit-card"></i><span>Pagos</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/usuarios}" th:class="'nav-link' + (${activo}=='usuarios'?' active':'')">
+                <i class="fas fa-users"></i><span>Usuarios</span>
+            </a>
+        </li>
+
+        <li class="nav-section" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">INVENTARIO</li>
+        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+            <a th:href="@{/productos}" th:class="'nav-link' + (${activo}=='productos'?' active':'')">
+                <i class="fas fa-box"></i><span>Productos</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+            <a th:href="@{/ofertas}" th:class="'nav-link' + (${activo}=='ofertas'?' active':'')">
+                <i class="fas fa-tag"></i><span>Ofertas</span>
+            </a>
+        </li>
+
+        <!-- Reportes - solo ADMIN y RECEPCIONISTA -->
+        <li class="nav-section" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">REPORTES</li>
+        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+            <a th:href="@{/reportes/ventas-productos}" th:class="'nav-link' + (${activo}=='reportes-ventas'?' active':'')">
+                <i class="fas fa-chart-line"></i><span>Ventas Productos</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+            <a th:href="@{/reportes/reservaciones-usuario}" th:class="'nav-link' + (${activo}=='reportes-reservaciones'?' active':'')">
+                <i class="fas fa-user-clock"></i><span>Reservaciones x Usuario</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
+            <a th:href="@{/reportes/reservaciones-activas}" th:class="'nav-link' + (${activo}=='reportes-reservaciones-activas'?' active':'')">
+                <i class="fas fa-calendar-check"></i><span>Reservaciones Activas</span>
+            </a>
+        </li>
+
+        <!-- ── CLIENTE ── -->
+        <li class="nav-section" sec:authorize="hasRole('CLIENTE')">MIS SERVICIOS</li>
+
+        <li class="nav-item" sec:authorize="hasRole('CLIENTE')">
+            <a th:href="@{/reservaciones}" th:class="'nav-link' + (${activo}=='reservaciones'?' active':'')">
+                <i class="fas fa-calendar-check"></i><span>Mis Reservaciones</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasRole('CLIENTE')">
+            <a th:href="@{/habitaciones}" th:class="'nav-link' + (${activo}=='habitaciones'?' active':'')">
+                <i class="fas fa-bed"></i><span>Habitaciones</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasRole('CLIENTE')">
+            <a th:href="@{/pagos}" th:class="'nav-link' + (${activo}=='pagos'?' active':'')">
+                <i class="fas fa-credit-card"></i><span>Mis Pagos</span>
+            </a>
+        </li>
+        <!-- <li class="nav-item" sec:authorize="hasRole('CLIENTE')">
+            <a th:href="@{/ofertas}" th:class="'nav-link' + (${activo}=='ofertas'?' active':'')">
+                <i class="fas fa-tag"></i><span>Ofertas Disponibles</span>
+            </a>
+        </li> -->
+        <li class="nav-item" sec:authorize="hasRole('CLIENTE')">
+            <a th:href="@{/productos}" th:class="'nav-link' + (${activo}=='productos'?' active':'')">
+                <i class="fas fa-box"></i><span>Productos</span>
+            </a>
+        </li>
+
+    </ul>
+
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
+            <div class="user-details">
+                <span class="user-name" sec:authentication="name">Usuario</span>
+                <span class="user-role" sec:authorize="hasRole('ADMIN')">Administrador</span>
+                <span class="user-role" sec:authorize="hasRole('RECEPCIONISTA')">Recepcionista</span>
+                <span class="user-role" sec:authorize="hasRole('CLIENTE')">Cliente</span>
+            </div>
+        </div>
+        <a th:href="@{/logout}" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+</nav>
+</body>
+</html>

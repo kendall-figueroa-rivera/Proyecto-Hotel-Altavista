@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Actualizar Stock | Hotel Altavista</title>
+
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <div th:replace="~{fragments :: sidebar('productos')}"></div>
+
+    <div class="main-content">
+
+        <header class="topbar">
+            <h1 class="page-title">Actualizar Stock</h1>
+        </header>
+
+        <main class="page-body">
+
+            <div class="card">
+
+                <div class="card-header">
+                    <span class="card-title">Datos del producto</span>
+                </div>
+
+                <div class="card-body">
+
+                    <form th:action="@{/productos/stock}" method="post">
+
+                        <input type="hidden"
+                               name="idProducto"
+                               th:value="${producto.idProducto}">
+
+                        <div class="form-group">
+                            <label>Producto</label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${producto.nombre}"
+                                   readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Stock actual</label>
+
+                            <input type="number"
+                                   class="form-control"
+                                   th:value="${producto.stock}"
+                                   readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="stock">Nuevo stock</label>
+
+                            <input type="number"
+                                   id="stock"
+                                   name="stock"
+                                   class="form-control"
+                                   min="0"
+                                   required>
+                        </div>
+
+                        <div style="display:flex; gap:12px; margin-top:20px;">
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-boxes-stacked"></i>
+                                Actualizar Stock
+                            </button>
+
+                            <a th:href="@{/productos}" class="btn btn-outline">
+                                <i class="fas fa-arrow-left"></i>
+                                Volver
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>
