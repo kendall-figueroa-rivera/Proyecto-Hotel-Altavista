@@ -35,3 +35,6 @@ wallet/
 
 # Variables de entorno locales
 .env
+
+# Credenciales reales de BD (cada quien tiene las suyas, nunca se sube)
+application-local.properties
